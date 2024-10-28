@@ -1,5 +1,3 @@
-import random
-import numpy as np
 import pandas as pd
 import pickle
 import streamlit as st
@@ -9,8 +7,8 @@ import pyodbc
 # Conexão com o banco de dados AzureDB
 conn = pyodbc.connect(
     'DRIVER={ODBC Driver 17 for SQL Server};'
-    'SERVER=cgenius.database.windows.net;'
-    'DATABASE=cgeniusIA;'
+    'SERVER=cgenius-resources.database.windows.net;'
+    'DATABASE=cgeniusdatabase;'
     'UID=cgeniusbanco;'
     'PWD=ftw1421@'
 )
