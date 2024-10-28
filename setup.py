@@ -19,7 +19,7 @@ setup(
     author="Cgenius",
     author_email="rm98214@fiap.com.br",
     description="Descrição do pacote",
-    long_description=open("README.md").read(),
+    #long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/gabrielmendesoficial/cgenius-devops-sprint-4",
     classifiers=[
