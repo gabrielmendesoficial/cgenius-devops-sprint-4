@@ -101,7 +101,4 @@ if cpf_cliente:
     else:
         st.write('Nenhum dado encontrado para o CPF inserido.')
 
-else:
-    st.write('Cliente não encontrado. Verifique o CPF inserido.')
-
 conn.close()
