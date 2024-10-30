@@ -1,5 +1,4 @@
 import pandas as pd
-import pickle
 import streamlit as st
 import matplotlib.pyplot as plt
 import pyodbc
@@ -12,9 +11,6 @@ conn = pyodbc.connect(
     'UID=cgeniusbanco;'
     'PWD=ftw1421@'
 )
-
-with open('model/modelo_recomendacao.pkl', 'rb') as file:
-    modelo = pickle.load(file)
 
 st.title('Elite Sales - Recomendações de Call Center')
 cpf_cliente = st.text_input('Digite o CPF do Cliente')
