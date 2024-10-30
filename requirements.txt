@@ -1,4 +1,9 @@
+# Dependências Python
 pandas
 streamlit
 matplotlib
 pyodbc
+
+# Comando para instalar o ODBC Driver 17 for SQL Server (Ubuntu/Debian)
+--find-links https://packages.microsoft.com/ubuntu/$(lsb_release -rs)/prod
+!apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
