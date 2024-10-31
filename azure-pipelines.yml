@@ -29,10 +29,10 @@ steps:
     rootFolderOrFile: '$(Build.SourcesDirectory)'
     includeRootFolder: false
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/Package.zip'
+    archiveFile: '$(System.ArtifactsDirectory)/**/cgenius.zip'
     replaceExistingArchive: true
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/Package.zip'
+    targetPath: '$(System.ArtifactsDirectory)/**/cgenius.zip'
     artifact: 'PackageZip'
