@@ -23,3 +23,8 @@ steps:
 - script: |
     python setup.py bdist_wheel  # Cria um pacote Wheel
   displayName: 'Construir Pacote'
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    artifact: 'Pacote'
+    path: '$(System.ArtifactsDirectory)'
