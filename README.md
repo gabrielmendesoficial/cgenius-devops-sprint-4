@@ -62,5 +62,26 @@ Os dados contém as seguintes colunas, cada uma com suas respectivas funções:
 
 6. Atualizações Dinâmicas: A cada interação com novos clientes, o código é capaz de atualizar dinamicamente as abordagens e sugestões de produtos com base em novos dados adquiridos, mantendo o sistema sempre alinhado com as necessidades e preferências mais atuais dos clientes.
 
+## Como Iniciar o Código
+- Para iniciar o sistema Elite Sales, basta ir no botão em verde "Code" e logo em sequencia no botão "+" do Codespace.
+![Parte1](https://i.imgur.com/BZJbEtI.png)
+- Depois de clicar no botão de "+" no Codespace ele vai abrir uma nova Guia e deve esperar o termino do seu carregamento.
+![Parte2](https://i.imgur.com/RRDUyi9.png)
+- No canto inferior direito, você terá a possibilidade de instalar o Python apos clicar no "app_database.py".
+![Parte3](https://i.imgur.com/tydqkXD.png)
+- A mensagem de instalação não seja enviada a você? Basta entrar na loja de extensões e instalar ela. 
+![Parte4](https://i.imgur.com/0RjS5ji.png)
+- Depois de instalar o Python basta utilizar o comando "pip install -r requirements.txt" no terminal e os seguintes comandos na ordem:
+
+1. curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+2. curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list
+3. sudo apt-get update
+4. sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
+
+![Parte5](https://i.imgur.com/5Hwb4CY.png)
+- Instalando todas as dependencias do projeto, voce deve dar continuidade com o comando "streamlit run app_database.py"
+![Parte6](https://i.imgur.com/wB9hUQQ.png)
+
+
 ## Conclusão
 Este projeto visa revolucionar a forma como os operadores de call center interagem com os clientes, utilizando tecnologia de ponta para melhorar a eficiência e a qualidade do atendimento.

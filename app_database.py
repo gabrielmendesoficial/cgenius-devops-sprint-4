@@ -63,17 +63,7 @@ if cpf_cliente:
         plt.title('Distribuição de Gênero dos Clientes')
         plt.axis('equal')
         st.pyplot(plt)
-
-        # Gráfico 5: Total de Compras ao Longo do Tempo
-        compras_tempo = df.groupby('Data_Compra')['Valor_Compra'].sum().reset_index()
-        plt.figure(figsize=(10, 5))
-        plt.plot(compras_tempo['Data_Compra'], compras_tempo['Valor_Compra'], marker='o', color='purple')
-        plt.title('Total de Compras ao Longo do Tempo')
-        plt.xlabel('Data da Compra')
-        plt.ylabel('Valor Total das Compras (R$)')
-        plt.xticks(rotation=45)
-        st.pyplot(plt)
-
+        
         # Gráfico 6: Comparativo de Compras entre Clientes
         compras_cliente = df.groupby('Nome')['Valor_Compra'].sum().reset_index()
         plt.figure(figsize=(10, 5))
