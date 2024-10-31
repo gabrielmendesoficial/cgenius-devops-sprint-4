@@ -8,8 +8,9 @@ pool:
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.6'
-  displayName: 'Use Python 3.6'
+    versionSpec: '3.8'
+  displayName: 'Iniciando Python 3.8'
+
 
 - script: |
     python -m pip install --upgrade pip
