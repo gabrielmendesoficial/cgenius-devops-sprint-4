@@ -7,6 +7,10 @@ O objetivo deste projeto é desenvolver uma inteligência artificial (IA) que au
 ## Problema a Resolver
 Os operadores de call center frequentemente enfrentam desafios relacionados ao tempo de resposta e à personalização do atendimento. A falta de informações consolidadas sobre os clientes pode levar a interações menos satisfatórias e à perda de oportunidades de venda. A nossa solução visa otimizar esse processo.
 
+## Consulte a versão sem o connector do database
+
+ - [Link para o repositorio de IA no Github](https://github.com/gabrielmendesoficial/cgeniusIA)
+
 ## Solução
 A IA utiliza informações dos clientes, permitindo a geração automática de textos que ajudam os operadores a se comunicarem de forma mais eficiente. Por exemplo, a IA pode sugerir produtos com base nos interesses e histórico de compras do cliente, facilitando o processo de venda e aumentando a satisfação do cliente.
 
