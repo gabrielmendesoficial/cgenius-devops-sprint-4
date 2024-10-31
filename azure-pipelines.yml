@@ -1,38 +1,39 @@
+
 trigger:
-- main
+- master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
+strategy:
+  matrix:
+    Python36:
+      python.version: '3.6'
 
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.8'
-  displayName: 'Iniciando Python 3.8'
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
 
 - script: |
     python -m pip install --upgrade pip
-    pip install --upgrade pip setuptools wheel
-    pip install -r requirements.txt  # Instala as dependências do projeto
-  displayName: 'Instalar Dependências'
+  displayName: 'Install dependencies'
 
 - script: |
-    python -m unittest discover  # Executa os testes
-  displayName: 'Executar Testes'
+    pip install pytest pytest-azurepipelines
+    pytest
+  displayName: 'pytest'
 
 - script: |
-    python setup.py bdist_wheel  # Cria um pacote Wheel
-  displayName: 'Construir Pacote'
+    python setup.py sdist
+  displayName: 'Artifact creation'
 
-- task: ArchiveFiles@2
+- task: CopyFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.SourcesDirectory)'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(System.ArtifactsDirectory)/**/cgenius.zip'
-    replaceExistingArchive: true
+    targetFolder: $(Build.ArtifactStagingDirectory)
 
-- task: PublishPipelineArtifact@1
+- task: PublishBuildArtifacts@1
   inputs:
-    targetPath: '$(System.ArtifactsDirectory)/**/cgenius.zip'
-    artifact: 'PackageZip'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'dist'
+    publishLocation: 'Container'
