@@ -24,7 +24,15 @@ steps:
     python setup.py bdist_wheel  # Cria um pacote Wheel
   displayName: 'Construir Pacote'
 
-- task: DownloadPipelineArtifact@2
+- task: ArchiveFiles@2
   inputs:
-    artifact: 'Pacote'
-    path: '$(System.ArtifactsDirectory)'
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/Package.zip'
+    replaceExistingArchive: true
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)/Package.zip'
+    artifact: 'PackageZip'
