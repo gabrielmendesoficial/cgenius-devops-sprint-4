@@ -1,113 +1,91 @@
-import pandas as pd
+from flask import Flask, jsonify, request, make_response
+from flask_restful import Api, Resource
 import pyodbc
-from flask import Flask, jsonify, request
-import matplotlib.pyplot as plt
-import io
-import base64
+import pandas as pd
 
-# Inicializando o Flask
 app = Flask(__name__)
+api = Api(app)
 
-# Função para conectar ao banco de dados
-def get_connection():
-    return pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};'
-        'SERVER=cgenius-resources.database.windows.net;'
-        'DATABASE=cgeniusdatabase;'
-        'UID=cgeniusbanco;'
-        'PWD=ftw1421@'
-    )
+# Conexão com o banco de dados AzureDB
+conn = pyodbc.connect(
+    'DRIVER={ODBC Driver 17 for SQL Server};'
+    'SERVER=cgenius-resources.database.windows.net;'
+    'DATABASE=cgeniusdatabase;'
+    'UID=cgeniusbanco;'
+    'PWD=ftw1421@'
+)
 
-# Endpoint para criar um novo cliente
-@app.route('/clientes', methods=['POST'])
-def create_client():
-    data = request.json
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO Clientes (Nome, CPF, Genero) VALUES (?, ?, ?)",
-        (data['Nome'], data['CPF'], data['Genero'])
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "Cliente criado com sucesso!"}), 201
-
-# Endpoint para ler todos os clientes
-@app.route('/clientes', methods=['GET'])
-def read_clients():
-    conn = get_connection()
-    query = "SELECT * FROM Clientes"
-    df = pd.read_sql(query, conn)
-    conn.close()
-    return jsonify(df.to_dict(orient='records'))
-
-# Endpoint para ler um cliente pelo CPF
-@app.route('/clientes/<string:cpf_cliente>', methods=['GET'])
-def read_client_data(cpf_cliente):
-    conn = get_connection()
-    query = f"""
-    SELECT * FROM Clientes
-    LEFT JOIN Compras ON Clientes.Cliente_ID = Compras.Cliente_ID
-    WHERE Clientes.CPF = '{cpf_cliente}' OR Clientes.CPF != '{cpf_cliente}'
-    """
-    df = pd.read_sql(query, conn)
-
-    if df.empty:
-        return jsonify({"message": "Nenhum dado encontrado para o CPF inserido."}), 404
-
-    total_compras_cliente = df[df['CPF'] == cpf_cliente]['Valor_Compra'].sum()
-    total_compras_media = df['Valor_Compra'].mean()
-
-    # Gráfico: Comparativo de Compras
-    fig1 = plt.figure(figsize=(10, 5))
-    plt.bar(['Cliente', 'Média'], [total_compras_cliente, total_compras_media], color=['blue', 'orange'])
-    plt.title('Comparativo de Compras do Cliente vs Média')
-    plt.ylabel('Total de Compras (R$)')
-    plt.tight_layout()
+class Cliente(Resource):
+    def get(self, cpf):
+        query = f"""
+            SELECT * FROM Clientes
+            LEFT JOIN Compras ON Clientes.Cliente_ID = Compras.Cliente_ID
+            WHERE Clientes.CPF = '{cpf}'
+        """
+        df = pd.read_sql(query, conn)
+        
+        if df.empty:
+            return make_response(jsonify({'message': 'Cliente não encontrado'}), 404)
+        
+        cliente_data = df.to_dict(orient='records')
+        return jsonify(cliente_data)
     
-    buf1 = io.BytesIO()
-    plt.savefig(buf1, format='png')
-    buf1.seek(0)
-    plt.close(fig1)
-    
-    img1 = base64.b64encode(buf1.getvalue()).decode()
+    def post(self):
+        data = request.json
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO Clientes (CPF, Nome, Genero)
+            VALUES (?, ?, ?)
+        """, data['CPF'], data['Nome'], data['Genero'])
+        conn.commit()
+        return make_response(jsonify({'message': 'Cliente criado com sucesso'}), 201)
 
-    return jsonify({
-        "total_compras_cliente": total_compras_cliente,
-        "total_compras_media": total_compras_media,
-        "grafico_comparativo": img1
-    })
+    def put(self, cpf):
+        data = request.json
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE Clientes
+            SET Nome = ?, Genero = ?
+            WHERE CPF = ?
+        """, data['Nome'], data['Genero'], cpf)
+        conn.commit()
+        return make_response(jsonify({'message': 'Cliente atualizado com sucesso'}), 200)
 
-# Endpoint para atualizar um cliente
-@app.route('/clientes/<string:cpf_cliente>', methods=['PUT'])
-def update_client(cpf_cliente):
-    data = request.json
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE Clientes SET Nome = ?, Genero = ? WHERE CPF = ?",
-        (data['Nome'], data['Genero'], cpf_cliente)
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "Cliente atualizado com sucesso!"})
+    def delete(self, cpf):
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Clientes WHERE CPF = ?", cpf)
+        conn.commit()
+        return make_response(jsonify({'message': 'Cliente deletado com sucesso'}), 204)
 
-# Endpoint para deletar um cliente
-@app.route('/clientes/<string:cpf_cliente>', methods=['DELETE'])
-def delete_client(cpf_cliente):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "DELETE FROM Clientes WHERE CPF = ?",
-        (cpf_cliente,)
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "Cliente deletado com sucesso!"})
+# Recursos adicionais para Compras, Gastos Mensais e Comparativos
+class Compras(Resource):
+    def get(self):
+        query = "SELECT Categoria, SUM(Valor_Compra) as Total_Valor FROM Compras GROUP BY Categoria"
+        df = pd.read_sql(query, conn)
+        compras_data = df.to_dict(orient='records')
+        return jsonify(compras_data)
 
-# Rodar a aplicação com: flask run
+class GastosMensais(Resource):
+    def get(self):
+        query = "SELECT Nome, SUM(Gastos_Mensais) as Total_Gastos FROM Clientes GROUP BY Nome"
+        df = pd.read_sql(query, conn)
+        gastos_data = df.to_dict(orient='records')
+        return jsonify(gastos_data)
+
+class GeneroDistribuicao(Resource):
+    def get(self):
+        query = "SELECT Genero, COUNT(*) as Quantidade FROM Clientes GROUP BY Genero"
+        df = pd.read_sql(query, conn)
+        genero_data = df.to_dict(orient='records')
+        return jsonify(genero_data)
+
+# Rota CRUD para o Cliente
+api.add_resource(Cliente, '/cliente', '/cliente/<string:cpf>')
+
+# Rotas para gráficos e comparativos
+api.add_resource(Compras, '/compras')
+api.add_resource(GastosMensais, '/gastos-mensais')
+api.add_resource(GeneroDistribuicao, '/genero-distribuicao')
+
 if __name__ == '__main__':
     app.run(debug=True)

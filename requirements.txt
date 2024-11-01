@@ -1,5 +1,6 @@
 # Dependências Python
 pandas
-streamlit
+flask
+flask_restful
 matplotlib
 pyodbc
