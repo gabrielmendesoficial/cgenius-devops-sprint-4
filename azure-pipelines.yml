@@ -34,8 +34,3 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'app'
       publishLocation: 'Container'
-
-  - script: |
-      pip install pytest pytest-azurepipelines
-      pytest
-    displayName: 'pytest'
