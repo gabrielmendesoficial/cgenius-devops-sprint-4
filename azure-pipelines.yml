@@ -51,6 +51,11 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       displayName: 'Upload package'
       artifact: drop
+      
+    - script: |
+        echo "Listing files in artifact staging directory:"
+        dir "$(build.artifactstagingdirectory)"
+        displayName: 'Check artifact staging directory for JAR'
 
 - stage: Deploy
   displayName: 'Deploy Web App'
