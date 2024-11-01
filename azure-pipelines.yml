@@ -33,8 +33,6 @@ stages:
       displayName: 'Use Python $(pythonVersion)'
 
     - script: |
-        python -m venv antenv
-        source antenv/bin/activate
         python -m pip install --upgrade pip
         pip install setup
         pip install -r requirements.txt
@@ -73,9 +71,10 @@ stages:
               versionSpec: '$(pythonVersion)'
             displayName: 'Use Python version'
 
-          - task: AzureWebApp@1
-            displayName: 'Deploy Azure Web App : $(webAppName)'
+          - task: AzureRmWebAppDeployment@4
             inputs:
-              azureSubscription: $(azureServiceConnectionId)
-              appName: $(webAppName)
-              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure for Students (ac9ade9d-773a-4b2c-a1c6-424c1d25234a)'
+              appType: 'webApp'
+              WebAppName: 'cgenius'
+              package: '$(build.artifactstagingdirectory)/*'
