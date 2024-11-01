@@ -75,12 +75,6 @@ stages:
             inputs:
               versionSpec: '$(pythonVersion)'
             displayName: 'Use Python version'
-            
-          - task: ExtractFiles@1
-            inputs:
-              archiveFilePatterns: '/home/vsts/work/1/a/*.zip'
-              cleanDestinationFolder: true
-              overwriteExistingFiles: false
 
           - task: AzureRmWebAppDeployment@4
             inputs:
@@ -88,4 +82,4 @@ stages:
               azureSubscription: 'Azure for Students (ac9ade9d-773a-4b2c-a1c6-424c1d25234a)'
               appType: 'webApp'
               WebAppName: 'cgenius'
-              package: '/home/vsts/work/1/a/*.zip'
+              package: '$(build.artifactstagingdirectory)/61.zip'
